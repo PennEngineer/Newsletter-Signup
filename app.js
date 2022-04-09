@@ -1,14 +1,16 @@
 const express = require("express");
 const bodyParser= require("body-parser");
 const request = require("request");
+const https = require("https");
+const { response } = require("express");
 const app = express();
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({extended:true}));
 
 
 
-app.listen(3000, ()=>{
-    console.log("Server is running on port 3000");
+app.listen(process.env.PORT || 3000, ()=>{
+    console.log("Our app is running on port " + process.env.PORT);
 })
 
 app.get("/",(req,res)=>{
@@ -16,10 +18,44 @@ app.get("/",(req,res)=>{
 })
 
 app.post("/",(req,res)=>{
-    var firstName = req.body.fname;
-    var lastName = req.body.lname;
-    var email = req.body.email;
-    console.log(firstName);
-    console.log(lastName);
-    console.log(email);
-})
+    const firstName = req.body.fname;
+    const lastName = req.body.lname;
+    const email = req.body.email;
+    var data = {
+        members: [
+            {
+                email_address: email,
+                status: "subscribed",
+                merge_fields: {
+                    FNAME: firstName,
+                    LNAME: lastName
+                }
+            }
+        ]
+    };
+    const jsonData = JSON.stringify(data);
+    const url = 'https://us14.api.mailchimp.com/3.0/lists/59f491ed4b';
+    const options = {
+        method: "POST",
+        auth: "KevnPenn:81e68c1eea248f8f7deea49272936e53-us14"
+    }
+    const request = https.request(url, options, (response)=>{
+        if(response.statusCode === 200){
+            res.sendFile(__dirname + "/success.html");
+        }
+        else {
+            res.sendFile(__dirname + "/failure.html");
+        }
+
+        response.on("data", (data)=> {
+            console.log(JSON.parse(data));
+        })
+    })
+    request.write(jsonData);
+    request.end();
+});
+
+
+//81e68c1eea248f8f7deea49272936e53-us14
+
+//list id: 59f491ed4b
