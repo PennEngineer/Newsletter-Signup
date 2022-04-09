@@ -34,12 +34,10 @@ app.post("/",(req,res)=>{
         ]
     };
     const jsonData = JSON.stringify(data);
-    //enter list ID after lists/
-    const url = 'https://us14.api.mailchimp.com/3.0/lists/';
+    const url = 'https://us14.api.mailchimp.com/3.0/lists/59f491ed4b';
     const options = {
         method: "POST",
-        //fill in any string username in anystring and add your api in API field
-        auth: "anystring:api"
+        auth: "KevnPenn:81e68c1eea248f8f7deea49272936e53-us14"
     }
     const request = https.request(url, options, (response)=>{
         if(response.statusCode === 200){
@@ -56,3 +54,8 @@ app.post("/",(req,res)=>{
     request.write(jsonData);
     request.end();
 });
+
+
+//81e68c1eea248f8f7deea49272936e53-us14
+
+//list id: 59f491ed4b
